@@ -4,57 +4,68 @@ import Link from "next/link";
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="w-full max-w-md space-y-8 rounded-xl border bg-card p-8 shadow-lg">
+    <div className="flex min-h-screen items-center justify-center bg-[#FAFAF5]">
+      <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">TKD-Hub</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <h1 className="font-[var(--font-heading)] text-4xl font-black uppercase italic tracking-tighter">
+            TKD-Hub
+          </h1>
+          <p className="mt-2 text-xs font-bold uppercase tracking-widest text-black/50">
             Sign in to manage your studio
           </p>
         </div>
 
-        <form className="space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-foreground"
+        <div className="border-2 border-black bg-white p-8 neo-shadow">
+          <h2 className="font-[var(--font-heading)] text-2xl font-black uppercase">
+            Welcome Back
+          </h2>
+          <p className="mt-1 text-xs text-black/50">
+            Enter your credentials to access the dojang dashboard
+          </p>
+
+          <form className="mt-6 space-y-4">
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-black/60">
+                Email Address
+              </label>
+              <input
+                type="email"
+                className="mt-1 block w-full border-2 border-black bg-white px-4 py-3 text-sm font-medium placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-[#0047A0]"
+                placeholder="master@tkdhub.com"
+              />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-black/60">
+                  Password
+                </label>
+                <a href="#" className="text-[10px] font-bold uppercase text-[#0047A0] hover:underline">
+                  Forgot?
+                </a>
+              </div>
+              <input
+                type="password"
+                className="mt-1 block w-full border-2 border-black bg-white px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0047A0]"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full border-2 border-black bg-[#CD2E3A] py-3 text-sm font-black uppercase tracking-wider text-white neo-shadow transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none"
             >
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              className="mt-1 block w-full rounded-lg border bg-background px-3 py-2 text-sm"
-              placeholder="you@example.com"
-            />
-          </div>
+              Sign In
+            </button>
+          </form>
+        </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-foreground"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              className="mt-1 block w-full rounded-lg border bg-background px-3 py-2 text-sm"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            Sign In
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-center text-xs font-bold text-black/50">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-accent hover:underline">
-            Register
+          <Link
+            href="/register"
+            className="font-black text-[#CD2E3A] uppercase hover:underline"
+          >
+            Register your studio
           </Link>
         </p>
       </div>

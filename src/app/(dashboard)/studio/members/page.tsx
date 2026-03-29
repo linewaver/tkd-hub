@@ -4,17 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
 import { getBeltInfo } from "@/lib/constants";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { AddMemberDialog } from "@/components/domain/add-member-dialog";
 
 export default function MembersPage() {
@@ -27,9 +16,7 @@ export default function MembersPage() {
   });
 
   useEffect(() => {
-    if (studioQuery.data && !studioId) {
-      setStudioId(studioQuery.data.id);
-    }
+    if (studioQuery.data && !studioId) setStudioId(studioQuery.data.id);
   }, [studioQuery.data, studioId]);
 
   const membersQuery = trpc.member.list.useQuery(
@@ -42,82 +29,100 @@ export default function MembersPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Members</h1>
-        <Button onClick={() => setDialogOpen(true)}>Add Member</Button>
+        <h1 className="font-[var(--font-heading)] text-3xl font-black uppercase italic tracking-tight">
+          Members
+        </h1>
+        <button
+          onClick={() => setDialogOpen(true)}
+          className="border-2 border-black bg-[#CD2E3A] px-6 py-3 text-sm font-bold uppercase tracking-wider text-white neo-shadow transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none active:translate-x-1 active:translate-y-1"
+        >
+          + Add Member
+        </button>
       </div>
 
       <div className="flex items-center gap-4">
-        <Input
-          placeholder="Search members..."
+        <input
+          placeholder="SEARCH MEMBERS BY NAME, EMAIL OR PHONE..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
+          className="flex-1 border-2 border-black bg-white px-4 py-3 text-xs font-bold uppercase placeholder:text-black/30 focus:outline-none focus:ring-2 focus:ring-[#0047A0]"
         />
-        <Badge variant="secondary">
-          {membersQuery.data?.length ?? 0} members
-        </Badge>
+        <span className="border-2 border-black bg-[#0047A0] px-4 py-3 text-xs font-black uppercase text-white neo-shadow-sm">
+          {membersQuery.data?.length ?? 0} Members
+        </span>
       </div>
 
-      <div className="rounded-xl border bg-card">
+      <div className="border-2 border-black bg-white neo-shadow">
         {membersQuery.isLoading ? (
-          <div className="p-6 text-center text-muted-foreground">
+          <div className="p-6 text-center text-sm font-bold uppercase text-black/40">
             Loading members...
           </div>
         ) : !membersQuery.data?.length ? (
-          <div className="p-6 text-center text-muted-foreground">
-            No members found. Add your first member to get started.
+          <div className="p-6 text-center text-sm font-bold uppercase text-black/40">
+            No members found. Add your first member.
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Belt</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <table className="w-full">
+            <thead>
+              <tr className="border-b-2 border-black bg-[#FAFAF5]">
+                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-black/60">
+                  Name
+                </th>
+                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-black/60">
+                  Belt
+                </th>
+                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-black/60">
+                  Status
+                </th>
+                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-black/60">
+                  Email
+                </th>
+                <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-black/60">
+                  Phone
+                </th>
+              </tr>
+            </thead>
+            <tbody>
               {membersQuery.data.map((member) => {
                 const belt = getBeltInfo(member.beltRank);
                 return (
-                  <TableRow key={member.id}>
-                    <TableCell>
+                  <tr
+                    key={member.id}
+                    className="border-b border-black/10 transition-colors hover:bg-[#FAFAF5]"
+                  >
+                    <td className="px-4 py-4">
                       <Link
                         href={`/studio/members/${member.id}`}
-                        className="font-medium hover:underline"
+                        className="font-bold text-[#0047A0] hover:underline"
                       >
                         {member.firstName} {member.lastName}
                       </Link>
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="px-4 py-4">
+                      <BeltBadge rank={member.beltRank} label={belt.label} />
+                    </td>
+                    <td className="px-4 py-4">
                       <span
-                        className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${belt.color}`}
-                      >
-                        {belt.label}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          member.status === "ACTIVE" ? "default" : "secondary"
-                        }
+                        className={`inline-block border-2 border-black px-3 py-1 text-[10px] font-black uppercase ${
+                          member.status === "ACTIVE"
+                            ? "bg-[#2E7D32] text-white"
+                            : "bg-gray-300 text-black"
+                        }`}
                       >
                         {member.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-xs font-medium text-black/60">
                       {member.email || "-"}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    </td>
+                    <td className="px-4 py-4 text-xs font-medium text-black/60">
                       {member.phone || "-"}
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 );
               })}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         )}
       </div>
 
@@ -133,5 +138,25 @@ export default function MembersPage() {
         />
       )}
     </div>
+  );
+}
+
+function BeltBadge({ rank, label }: { rank: string; label: string }) {
+  const colorMap: Record<string, string> = {
+    WHITE: "bg-white text-black",
+    YELLOW: "bg-[#F4A261] text-black",
+    GREEN: "bg-[#2E7D32] text-white",
+    BLUE: "bg-[#0047A0] text-white",
+    RED: "bg-[#CD2E3A] text-white",
+    BLACK_1DAN: "bg-black text-white",
+    BLACK_2DAN: "bg-black text-white",
+    BLACK_3DAN: "bg-black text-white",
+  };
+  return (
+    <span
+      className={`inline-block border-2 border-black px-3 py-1 text-[10px] font-black uppercase ${colorMap[rank] ?? "bg-gray-200 text-black"}`}
+    >
+      {label}
+    </span>
   );
 }
