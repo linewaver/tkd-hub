@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ==========================================
+// TKD-Hub Phase 1: Core Studio Management
+// ==========================================
+
+model Studio {
+  id        String   @id @default(cuid())
+  name      String
+  address   String?
+  city      String?
+  state     String?
+  zipCode   String?
+  country   String   @default("US")
+  phone     String?
+  email     String?
+  timezone  String   @default("America/New_York")
+  logoUrl   String?
+  status    String   @default("ACTIVE") // ACTIVE, INACTIVE, SUSPENDED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users          User[]
+  members        Member[]
+  attendances    Attendance[]
+  beltPromotions BeltPromotion[]
+  payments       Payment[]
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String
+  role           String   @default("STUDIO_OWNER") // PLATFORM_ADMIN, STUDIO_OWNER, INSTRUCTOR, PARENT
+  supabaseUserId String?  @unique
+  studioId       String?
+  status         String   @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  studio   Studio? @relation(fields: [studioId], references: [id])
+  children ParentStudent[]
+
+  @@index([studioId])
+}
+
+model Member {
+  id                    String   @id @default(cuid())
+  studioId              String
+  firstName             String
+  lastName              String
+  dateOfBirth           DateTime?
+  email                 String?
+  phone                 String?
+  beltRank              String   @default("WHITE")
+  enrollmentDate        DateTime @default(now())
+  status                String   @default("ACTIVE") // ACTIVE, INACTIVE, SUSPENDED
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  notes                 String?
+  photoUrl              String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  studio         Studio          @relation(fields: [studioId], references: [id])
+  attendances    Attendance[]
+  beltPromotions BeltPromotion[]
+  payments       Payment[]
+  parents        ParentStudent[]
+
+  @@index([studioId])
+  @@index([studioId, status])
+}
+
+model ParentStudent {
+  id        String   @id @default(cuid())
+  parentId  String
+  memberId  String
+  createdAt DateTime @default(now())
+
+  parent  User   @relation(fields: [parentId], references: [id])
+  member  Member @relation(fields: [memberId], references: [id])
+
+  @@unique([parentId, memberId])
+}
+
+model Attendance {
+  id           String    @id @default(cuid())
+  memberId     String
+  studioId     String
+  date         DateTime
+  checkInTime  DateTime?
+  checkOutTime DateTime?
+  status       String    @default("PRESENT") // PRESENT, ABSENT, LATE, EXCUSED
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  member Member @relation(fields: [memberId], references: [id])
+  studio Studio @relation(fields: [studioId], references: [id])
+
+  @@index([studioId, date])
+  @@index([memberId])
+}
+
+model BeltPromotion {
+  id       String   @id @default(cuid())
+  memberId String
+  studioId String
+  fromBelt String
+  toBelt   String
+  testDate DateTime
+  passed   Boolean  @default(false)
+  notes    String?
+  createdAt DateTime @default(now())
+
+  member Member @relation(fields: [memberId], references: [id])
+  studio Studio @relation(fields: [studioId], references: [id])
+
+  @@index([studioId])
+  @@index([memberId])
+}
+
+model Payment {
+  id              String    @id @default(cuid())
+  memberId        String
+  studioId        String
+  amount          Float
+  currency        String    @default("USD")
+  status          String    @default("UNPAID") // PAID, UNPAID, OVERDUE, REFUNDED
+  description     String?
+  dueDate         DateTime?
+  paidDate        DateTime?
+  stripePaymentId String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  member Member @relation(fields: [memberId], references: [id])
+  studio Studio @relation(fields: [studioId], references: [id])
+
+  @@index([studioId])
+  @@index([studioId, status])
+  @@index([memberId])
+}
